@@ -17,7 +17,9 @@ const userModel = require('../models/userModel')
         const body = req.body;
 
         var user = await userModel.findOne({ userName: body.userName });
-console.log(user);
+
+        if(user===null) return res.status(404).send({ error:"User not found",message: "User not found" })
+
         const validPassword = await checkPassword(body.password, user.password);
         
         if (validPassword) {
@@ -58,7 +60,7 @@ console.log(user);
             );
         }catch(error){
             // let err = Object.keys(error.keyPattern)[0];
-            return res.status(403).res.send({message:error})
+            return res.status(403).send({message:error})
         }
 
 

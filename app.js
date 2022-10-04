@@ -17,15 +17,16 @@ con.on('open',()=>{
 app.use(express.json())
 
 
-
 const userRoutes = require('./routes/user.route')
 const productRoutes = require('./routes/product.route')
 const categoryRoutes = require('./routes/category.route')
+const cartRoutes = require('./routes/cart.route')
 
 app.use('/users',userRoutes)
 
 app.use('/products',verifyToken,productRoutes)
 app.use('/category',verifyToken,categoryRoutes)
+app.use('/cart',verifyToken,cartRoutes)
 
 app.get('/',verifyToken ,(req,res)=>{
     res.send(

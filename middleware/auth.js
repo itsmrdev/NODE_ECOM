@@ -10,24 +10,24 @@ const verifyToken= async (req,res,next) => {
     if(typeof bearerHeader !== "undefined"){
 
         const bearerToken = bearerHeader.split(' ')[1];
-        // if(!sessionStorage.getItem('userToken')||bearerToken!=sessionStorage.getItem('userToken')){
-        //     res.status(400).send(
-        //         {message:'Your session expired please login again!'}
-        //     )
-        //     return false;
-        // }
+        req.userData = await sessionStorage.getItem('user');
+
+        if(!sessionStorage.getItem('userToken')||bearerToken!=sessionStorage.getItem('userToken')){
+            return res.status(400).send(
+                {message:'Your session expired please login again!'}
+            )
+        }
         await jwt.verify(bearerToken,'secretkey',(err,authData) => {
             if(err){
-                res.status(400).send(
+                return res.status(400).send(
                     {message:err.message}
                 )
-                return false;
             }
             next();
         });
         
     }else{
-        res.status(404).send({message:"Auth token is required!"})//forbidden 1
+        return res.status(404).send({message:"Auth token is required!"})//forbidden 1
     }
 }
 
@@ -44,6 +44,7 @@ const checkPassword = async (password, userPass, callback) => {
 const logoutUser = async()=>{
     sessionStorage.removeItem('userToken');
     sessionStorage.removeItem('user');
+    return true;
 }
 const setSessionToken = async(UserData,callback)=>{
     try{
@@ -53,7 +54,7 @@ const setSessionToken = async(UserData,callback)=>{
         sessionStorage.setItem('userToken', token);
 
         // console.log('i m waiting for token',token);
-        await new Promise(resolve => setTimeout(resolve, 4000));
+        await new Promise(resolve => setTimeout(resolve, 100));
         // console.log('i m waited for promise',token);
         return callback('',token);
 
@@ -64,10 +65,21 @@ const setSessionToken = async(UserData,callback)=>{
         return callback(error);
     }
 }
+
+const getLoginUser = async() => {
+    if(!sessionStorage.getItem('user')){
+        return '';
+    }else{
+        let userData = await sessionStorage.getItem('user');
+        return userData;
+    }
+}
+
 module.exports = {
     verifyToken,
     cryptPassword,
     checkPassword,
     logoutUser,
-    setSessionToken
+    setSessionToken,
+    getLoginUser
 };
