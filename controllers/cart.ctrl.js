@@ -46,11 +46,11 @@ const {getLoginUser} = require('../middleware/auth');
         ])//.limit(limit).skip(skip);
             console.log(cartProducts);
             try{
-                if(cartProducts){
+                if(cartProducts.length>0){
                     return res.send({message:"Product found in cart",data:cartProducts});
                     
                 }
-                return res.status(404).send({message:"No Product In Cart",data:''});
+                return res.status(404).send({message:"Cart is empty",data:''});
            
             }catch(error){
                 

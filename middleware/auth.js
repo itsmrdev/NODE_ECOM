@@ -12,7 +12,8 @@ const verifyToken= async (req,res,next) => {
         const bearerToken = bearerHeader.split(' ')[1];
         req.userData = await sessionStorage.getItem('user');
 
-        if(!sessionStorage.getItem('userToken')||bearerToken!=sessionStorage.getItem('userToken')){
+        if(!sessionStorage.getItem('userToken')){
+            // if(!sessionStorage.getItem('userToken')||bearerToken!=sessionStorage.getItem('userToken')){
             return res.status(400).send(
                 {message:'Your session expired please login again!'}
             )

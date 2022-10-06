@@ -5,7 +5,7 @@ var storage = multer.diskStorage({
       cb(null, 'uploads/products/')
     },
     filename: function (req, file, cb) {
-      cb(null, Date.now() + '.webp') //Appending .jpg
+      cb(null, Date.now() + '.webp') //Appending .webp
     }
 })
   
