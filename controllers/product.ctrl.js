@@ -1,6 +1,6 @@
 const fs = require('fs');
 const productModel = require('../models/productModel')
-const categoryModel = require('../models/categoryModel')
+
 
     /* get product by id */
     const getProductById = async(req,res,next)=>{
@@ -37,13 +37,6 @@ const categoryModel = require('../models/categoryModel')
             skip = (page-1) * limit;//first page no skip
 
         try{
-            // const products = await productModel.find(
-            //     {},
-            //     { productName: 1, productCategory: 1, productImage: 1, productStatus:1})
-            //     .limit(limit)
-            //     .skip(skip);
-            
-            //const newAr = products.map((num)=>{return {...num._doc,cat:{}};});
             
             const newAr2 = await productModel.aggregate([{
                 $lookup:
@@ -65,9 +58,15 @@ const categoryModel = require('../models/categoryModel')
     }
     /* add product in collection */
     const addProduct = async(req,res,next)=>{
+        // valiAddProduct(req);
+        
 
         const body = req.body;
+         console.log(req.file,'fl');
          console.log(body);
+         if(req.file==undefined||req.file.path==undefined){
+            return res.status(403).send({message:"Product Image is required"});
+        }
 
         try{
             const product = new productModel({
@@ -76,17 +75,23 @@ const categoryModel = require('../models/categoryModel')
                 stockQuantity: body.stockQuantity,
                 productImage: req.file.filename,
                 productStatus: body.productStatus,
-                productCategory: body.productCategory
+                productCategory: body.productCategory,
+                productPrice: body.productPrice
             });
 
             const productSaved = await product.save();
             res.send({message:"Product successfully added!",data:productSaved})
         }catch(error){
-            fs.rmSync(req.file.path, {
-                force: true,
-            });
-            res.status(403).send({message:error.message})
-            return false;
+
+            if(req.file!=undefined&&req.file.path!=undefined){
+
+                fs.rmSync(req.file.path, {
+                    force: true,
+                });
+            }
+
+            return res.status(403).send({message:error.message})
+
         }
     }
 

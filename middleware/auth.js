@@ -4,7 +4,7 @@ const bcrypt = require('bcrypt');
 
 //verify JWT auth token
 const verifyToken= async (req,res,next) => {
-    
+    console.log(req.body,'vr,req');
     const bearerHeader = req.headers['authorization'];
 
     if(typeof bearerHeader !== "undefined"){
@@ -31,6 +31,44 @@ const verifyToken= async (req,res,next) => {
         return res.status(404).send({message:"Auth token is required!"})//forbidden 1
     }
 }
+
+//verify JWT auth token admin
+const verifyAdmin= async (req,res,next) => {
+    
+    const bearerHeader = req.headers['authorization'];
+
+    if(typeof bearerHeader !== "undefined"){
+
+        const bearerToken = bearerHeader.split(' ')[1];
+        req.userData = await sessionStorage.getItem('user');
+
+        if(!sessionStorage.getItem('userToken')){
+            // if(!sessionStorage.getItem('userToken')||bearerToken!=sessionStorage.getItem('userToken')){
+            return res.status(400).send(
+                {message:'Your session expired please login again!'}
+            )
+        }
+
+        if(sessionStorage.getItem('user').userType!=1){
+            // if(!sessionStorage.getItem('userToken')||bearerToken!=sessionStorage.getItem('userToken')){
+            return res.status(400).send(
+                {message:'You dont have permission to access this resource!'}
+            )
+        }
+        await jwt.verify(bearerToken,'secretkey',(err,authData) => {
+            if(err){
+                return res.status(400).send(
+                    {message:err.message}
+                )
+            }
+            next();
+        });
+        
+    }else{
+        return res.status(404).send({message:"Auth token is required!"})//forbidden 1
+    }
+}
+
 
 const cryptPassword = async (password, callback) => {
     const salt = await bcrypt.genSalt(10);
@@ -78,6 +116,7 @@ const getLoginUser = async() => {
 
 module.exports = {
     verifyToken,
+    verifyAdmin,
     cryptPassword,
     checkPassword,
     logoutUser,

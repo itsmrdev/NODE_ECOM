@@ -26,7 +26,8 @@ const userModel = require('../models/userModel')
             const Newuser = {
                 id:user._id,
                 userName:user.userName,
-                email:user.email
+                email:user.email,
+                userType:user.userType
             }
             let token = await setSessionToken(Newuser,async (err,token) =>{
                 if(err){

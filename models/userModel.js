@@ -19,6 +19,11 @@ const userSchema = new mongoose.Schema({
         type:String,
         required:true
     },
+    userType:{
+        type:Number,
+        required:true,
+        default:2//1 for admin 2 for user 3 for both
+    },
     status:{
         type:Number,
         required:true,
